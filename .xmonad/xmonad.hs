@@ -28,8 +28,10 @@ import qualified Data.Map as M
 import XMonad.Hooks.DynamicLog (dynamicLogWithPP, wrap, xmobarPP, xmobarColor, shorten, PP(..))
 import XMonad.Hooks.EwmhDesktops  -- for some fullscreen events, also for xcomposite in obs.
 import XMonad.Hooks.ManageDocks (avoidStruts, docksEventHook, manageDocks, ToggleStruts(..))
+import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers (isFullscreen, doFullFloat, doCenterFloat)
 import XMonad.Hooks.ServerMode
+import XMonad.Hooks.StatusBar.PP -- new
 import XMonad.Hooks.SetWMName
 import XMonad.Hooks.WorkspaceHistory
 
@@ -229,7 +231,7 @@ tall     = renamed [Replace "tall"]
            $ limitWindows 12
            $ mySpacing 8
            $ ResizableTall 1 (3/100) (1/2) []
-magnify  = renamed [Replace "magnify"]
+magnifymg  = renamed [Replace "magnify"]
            $ smartBorders
            $ windowNavigation
            $ addTabs shrinkText myTabTheme
@@ -313,7 +315,7 @@ myLayoutHook = avoidStruts $ mouseResize $ windowArrange $ T.toggleLayouts float
                $ mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDefaultLayout
              where
                myDefaultLayout =     withBorder myBorderWidth tall
-                                 ||| magnify
+                                 ||| magnifymg
                                  ||| noBorders monocle
                                  ||| floats
                                  ||| noBorders tabs
@@ -353,12 +355,9 @@ myManageHook = composeAll
      , className =? "google-chrome-stable"   --> doShift ( myWorkspaces !! 1 )
      , className =? "mpv"             --> doShift ( myWorkspaces !! 7 )
      , className =? "tidal-hifi"             --> doShift ( myWorkspaces !! 6 )
-     , title =? "Visual Studio Code"	      --> doShift ( myWorkspaces !! 2 )
-     , title =? "Alacritty"	      --> doShift ( myWorkspaces !! 3 )
-     , className =? "alacritty"	      --> doShift ( myWorkspaces !! 3 )
+     , title =? "Visual Studio Code"          --> doShift ( myWorkspaces !! 2 )
      , className =? "Gimp"            --> doShift ( myWorkspaces !! 8 )
      , className =? "VirtualBox Manager" --> doShift  ( myWorkspaces !! 4 )
-     , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
      , isFullscreen -->  doFullFloat
      ] <+> namedScratchpadManageHook myScratchPads
 
@@ -378,7 +377,7 @@ myKeys =
         , ("M-S-<Return>", spawn "rofi -show drun") -- rofi
 
     -- KB_GROUP Run rofi-greenclip
-	, ("M-S-v", spawn "rofi -modi 'clipboard:greenclip print' -show clipboard -run-command '{cmd}'") -- print clipboard history
+    , ("M-S-v", spawn "rofi -modi 'clipboard:greenclip print' -show clipboard -run-command '{cmd}'") -- print clipboard history
 
     -- KB_GROUP Other Dmenu Prompts
     -- In Xmonad and many tiling window managers, M-p is the default keybinding to
@@ -403,7 +402,7 @@ myKeys =
     -- KB_GROUP Useful programs to have a keybinding for launch
         , ("M-<Return>", spawn (myTerminal))
         , ("M-b", spawn (myBrowser))
-	, ("C-e", spawn "pcmanfm")
+    , ("C-e", spawn "pcmanfm")
         , ("M-M1-h", spawn (myTerminal ++ "htop"))
 
     -- KB_GROUP Kill windows
@@ -448,9 +447,13 @@ myKeys =
         , ("M-<Space>", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts) -- Toggles noborder/full
 
    -- KB_GROUP Custom
-	, ("M-<XF86AudioPlay>", spawn "tidal-hifi") 	-- Open Tidal HiFi
-	, ("M-S-0", spawn "systemctl suspend && blurlock")-- Suspend PC
-	, ("M-S-l", spawn "blurlock")			-- Lock session
+    , ("M-<XF86AudioPlay>", spawn "tidal-hifi")         -- Open Tidal HiFi
+    , ("M-S-0", spawn "blurlock && systemctl suspend")  -- Suspend PC
+    , ("M-S-l", spawn "blurlock")                       -- Lock session
+
+   -- Brightness
+    , ("<XF86MonBrightnessUp>", spawn "brightnessctl set +5%") -- Brightness Up
+    , ("<XF86MonBrightnessDown>", spawn "brightnessctl set 5%-") -- Brightness Down
 
     -- KB_GROUP Increase/decrease windows in the master pane or the stack
         , ("M-S-<Up>", sendMessage (IncMasterN 1))      -- Increase # of clients master pane
@@ -514,12 +517,12 @@ myKeys =
         , ("<XF86Mail>", runOrRaise "thunderbird" (resource =? "thunderbird"))
         , ("<XF86Calculator>", runOrRaise "qalculate-gtk" (resource =? "qalculate-gtk"))
         , ("<XF86Eject>", spawn "toggleeject")
-	-- Entire display screnshot 
-	, ("<Print>", spawn "scrot Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png -d 1")
-	-- Focused display screnshot 
+    -- Entire display screnshot 
+    , ("<Print>", spawn "scrot Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png -d 1")
+    -- Focused display screnshot 
         , ("M-C-<Print>", spawn "scrot Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png -d 1 -u")
-	-- Selected display screnshot 
-	, ("M-S-<Print>", spawn "scrot -s Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png")
+    -- Selected display screnshot 
+    , ("M-S-<Print>", spawn "scrot -s Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png")
         ]
     -- The following lines are needed for named scratchpads.
           where nonNSP          = WSIs (return (\ws -> W.tag ws /= "NSP"))
@@ -533,14 +536,14 @@ main = do
     xmproc1 <- spawnPipe ("xmobar -x 1 $HOME/.config/xmobar/" ++ colorScheme ++ "-xmobarrc")
     xmproc2 <- spawnPipe ("xmobar -x 2 $HOME/.config/xmobar/" ++ colorScheme ++ "-xmobarrc")
     -- the xmonad, ya know...what the WM is named after!
-    xmonad $ ewmh def
+    xmonad $ docks $ ewmh def
         { manageHook         = myManageHook <+> manageDocks
-        , handleEventHook    = docksEventHook
-                               -- Uncomment this line to enable fullscreen support on things like YouTube/Netflix.
-                               -- This works perfect on SINGLE monitor systems. On multi-monitor systems,
-                               -- it adds a border around the window if screen does not have focus. So, my solution
-                               -- is to use a keybinding to toggle fullscreen noborders instead.  (M-<Space>)
-                               -- <+> fullscreenEventHook
+        -- , handleEventHook    = docksEventHook
+                        -- Uncomment this line to enable fullscreen support on things like YouTube/Netflix.
+                        -- This works perfect on SINGLE monitor systems. On multi-monitor systems,
+                        -- it adds a border around the window if screen does not have focus. So, my solution
+                        -- is to use a keybinding to toggle fullscreen noborders instead.  (M-<Space>)
+                        -- <+> fullscreenEventHook
         , modMask            = myModMask
         , terminal           = myTerminal
         , startupHook        = myStartupHook
@@ -549,7 +552,7 @@ main = do
         , borderWidth        = myBorderWidth
         , normalBorderColor  = myNormColor
         , focusedBorderColor = myFocusColor
-        , logHook = dynamicLogWithPP $ namedScratchpadFilterOutWorkspacePP $ xmobarPP
+        , logHook = dynamicLogWithPP . filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
               -- XMOBAR SETTINGS
               { ppOutput = \x -> hPutStrLn xmproc0 x   -- xmobar on monitor 1
                               >> hPutStrLn xmproc1 x   -- xmobar on monitor 2
