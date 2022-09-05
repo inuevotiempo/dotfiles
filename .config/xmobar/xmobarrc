@@ -9,7 +9,7 @@ Config { font            = "xft:SF Pro:weight=bold:pixelsize=11:antialias=true:h
                            , "xft:Font Awesome 6 Free Solid:pixelsize=12"
                            , "xft:Font Awesome 6 Brands:pixelsize=12"
                            ]
-       , bgColor      = "#1E1E2E"
+       , bgColor      = "#6C529C"
        , fgColor      = "#ff6c6b"
        , alpha = 10
        -- Position TopSize and BottomSize take 3 arguments:

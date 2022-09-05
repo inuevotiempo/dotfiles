@@ -21,11 +21,12 @@ source ~/powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Projects shortcuts
-alias siiup="cd ~/Documentos/Projects/siiup/ && source venv_siiup/bin/activate && code ."
-alias finance="cd ~/Documentos/Projects/FinanceWebApp/ && source finance_venv/bin/activate && code ."
+alias siiup="cd ~/Documentos/Projects/siiup/ && source venv_siiup/bin/activate"
+alias finance="cd ~/Documentos/Projects/FinanceWebApp/ && source finance_venv/bin/activate"
 alias run="python manage.py runserver"
 
 # Undervolt
 alias undervolt="sudo intel-undervolt"
 alias undervoltedit="sudo nano /etc/intel-undervolt.conf"
+alias ssdhealth="sudo smartctl -A /dev/nvme0n1"
 source ~/powerlevel10k/powerlevel10k.zsh-theme
