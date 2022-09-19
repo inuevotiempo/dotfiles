@@ -517,7 +517,7 @@ myKeys =
         , ("<XF86Calculator>", runOrRaise "qalculate-gtk" (resource =? "qalculate-gtk"))
         , ("<XF86Eject>", spawn "toggleeject")
     -- Entire display screnshot 
-    , ("<Print>", spawn "scrot Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png -d 1")
+    , ("<Print>", spawn "scrot Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png -d 1 && scrot -e 'xclip -selection clipboard -t image/png -i $f'")
     -- Focused display screnshot 
         , ("M-C-<Print>", spawn "scrot Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png -d 1 -u")
     -- Selected display screnshot 
