@@ -23,6 +23,11 @@ source ~/powerlevel10k/powerlevel10k.zsh-theme
 # Projects shortcuts
 alias siiup="cd ~/Documentos/Projects/siiup/ && source venv_siiup/bin/activate"
 alias finance="cd ~/Documentos/Projects/FinanceWebApp/ && source finance_venv/bin/activate"
+alias iglesia="cd ~/Documentos/Projects/IglesiaNuevoTiempo && source env/bin/activate"
+alias estadia="cd ~/Documentos/Projects/HandW_SistemaMedico/"
+alias estadiadb="pgcli postgresql://postgres:mnRqHDe0DyYsDWCxN1zW@containers-us-west-88.railway.app:6682/railway"
+
+
 alias run="python manage.py runserver"
 
 # Undervolt

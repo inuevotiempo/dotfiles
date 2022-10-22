@@ -79,11 +79,12 @@ import XMonad.Util.SpawnOnce
       -- SolarizedDark
       -- SolarizedLight
       -- TomorrowNight
+-- import Colors.Dracula
 -- import Colors.DoomOne
 import Colors.Palenight
 
 myFont :: String
-myFont = "xft:SF Mono:regular:size=9:antialias=true:hinting=true"
+myFont = "xft:SF Mono:regular:size=10:antialias=true:hinting=true"
 
 myModMask :: KeyMask
 myModMask = mod4Mask        -- Sets modkey to super/windows key
@@ -105,10 +106,10 @@ myBorderWidth :: Dimension
 myBorderWidth = 1           -- Sets border width for windows
 
 myNormColor :: String       -- Border color of normal windows
-myNormColor   = colorBack   -- This variable is imported from Colors.THEME
+myNormColor   = color13   -- This variable is imported from Colors.THEME
 
 myFocusColor :: String      -- Border color of focused windows
-myFocusColor  = color15     -- This variable is imported from Colors.THEME
+myFocusColor  = color14     -- This variable is imported from Colors.THEME
 
 windowCount :: X (Maybe String)
 windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
@@ -176,7 +177,7 @@ myAppGrid = [ ("Audacity", "audacity")
                  , ("LibreOffice Impress", "loimpress")
                  , ("LibreOffice Writer", "lowriter")
                  , ("OBS", "obs")
-                 , ("PCManFM", "pcmanfm")
+                 , ("Thunar", "thunar")
                  ]
 
 myScratchPads :: [NamedScratchpad]
@@ -326,7 +327,7 @@ myLayoutHook = avoidStruts $ mouseResize $ windowArrange $ T.toggleLayouts float
                                  ||| wideAccordion
 
 -- myWorkspaces = [" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ", " 9 "]
-myWorkspaces = [" Doc ", " Web ", " Code ", " Term ", " Sys ", " Chat ", " Mus ", " Vid ", " Gfx "]
+myWorkspaces = [" Doc ", " Web ", " Code ", " Term ", " DB ", "Sys ", " Mus ", " Vid ", " Gfx "]
 myWorkspaceIndices = M.fromList $ zipWith (,) myWorkspaces [1..] -- (,) == \x y -> (x,y)
 
 clickable ws = "<action=xdotool key super+"++show i++">"++ws++"</action>"
@@ -350,6 +351,7 @@ myManageHook = composeAll
      , className =? "toolbar"         --> doFloat
      , className =? "Yad"             --> doCenterFloat
      , title =? "Oracle VM VirtualBox Manager"  --> doFloat
+     , className =? "notion-app"      --> doShift ( myWorkspaces !! 0 )
      , title =? "Google Chrome"     --> doShift ( myWorkspaces !! 1 )
      , className =? "google-chrome-stable"   --> doShift ( myWorkspaces !! 1 )
      , className =? "mpv"             --> doShift ( myWorkspaces !! 7 )
@@ -401,7 +403,7 @@ myKeys =
     -- KB_GROUP Useful programs to have a keybinding for launch
         , ("M-<Return>", spawn (myTerminal))
         , ("M-b", spawn (myBrowser))
-    , ("C-e", spawn "pcmanfm")
+	    , ("C-e", spawn "thunar")
         , ("M-M1-h", spawn (myTerminal ++ "htop"))
 
     -- KB_GROUP Kill windows
@@ -447,12 +449,10 @@ myKeys =
 
    -- KB_GROUP Custom
     , ("M-<XF86AudioPlay>", spawn "tidal-hifi")         -- Open Tidal HiFi
-    , ("M-S-0", spawn "blurlock && systemctl suspend")  -- Suspend PC
-    , ("M-S-l", spawn "blurlock")                       -- Lock session
 
    -- Brightness
-    , ("<XF86MonBrightnessUp>", spawn "brightnessctl set +5%") -- Brightness Up
-    , ("<XF86MonBrightnessDown>", spawn "brightnessctl set 5%-") -- Brightness Down
+    , ("<XF86MonBrightnessUp>", spawn "brightnessctl set +2%") -- Brightness Up
+    , ("<XF86MonBrightnessDown>", spawn "brightnessctl set 2%-") -- Brightness Down
 
     -- KB_GROUP Increase/decrease windows in the master pane or the stack
         , ("M-S-<Up>", sendMessage (IncMasterN 1))      -- Increase # of clients master pane
@@ -509,19 +509,19 @@ myKeys =
         , ("<XF86AudioPrev>", spawn "mocp --previous")
         , ("<XF86AudioNext>", spawn "mocp --next")
         , ("<XF86AudioMute>", spawn "amixer set Master toggle")
-        , ("<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
-        , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
-        , ("<XF86HomePage>", spawn "google-chrome-stable hhtps://github.com/DilanGrajales")
+        , ("<XF86AudioLowerVolume>", spawn "amixer set Master 2%- unmute")
+        , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 2%+ unmute")
+        , ("<XF86HomePage>", spawn "google-chrome-stable https://github.com/DilanGrajales")
         , ("<XF86Search>", spawn "dm-websearch")
         , ("<XF86Mail>", runOrRaise "thunderbird" (resource =? "thunderbird"))
         , ("<XF86Calculator>", runOrRaise "qalculate-gtk" (resource =? "qalculate-gtk"))
         , ("<XF86Eject>", spawn "toggleeject")
     -- Entire display screnshot 
-    , ("<Print>", spawn "scrot Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png -d 1 && scrot -e 'xclip -selection clipboard -t image/png -i $f'")
+	    , ("<Print>", spawn "scrot Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png -d 1 -e 'xclip -selection clipboard -t image/png -i $f'")
     -- Focused display screnshot 
-        , ("M-C-<Print>", spawn "scrot Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png -d 1 -u")
+        , ("M-C-<Print>", spawn "scrot Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png -d 1 -u -e 'xclip -selection clipboard -t image/png -i $f'")
     -- Selected display screnshot 
-    , ("M-S-<Print>", spawn "scrot -s Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png")
+    	, ("M-S-<Print>", spawn "scrot -s Imágenes/Screenshots/screen_%m-%d-%Y_%H-%M-%S.png -e 'xclip -selection clipboard -t image/png -i $f'")
         ]
     -- The following lines are needed for named scratchpads.
           where nonNSP          = WSIs (return (\ws -> W.tag ws /= "NSP"))
@@ -557,10 +557,10 @@ main = do
                               >> hPutStrLn xmproc1 x   -- xmobar on monitor 2
                               >> hPutStrLn xmproc2 x   -- xmobar on monitor 3
                 -- Current workspace
-              , ppCurrent = xmobarColor color06 "" . wrap
-                            ("<box type=Bottom width=2 mb=2 color=" ++ color06 ++ ">") "</box>"
+              , ppCurrent = xmobarColor color14 "" . wrap
+                            ("<box type=Bottom width=2 mb=2 color=" ++ color14 ++ ">") "</box>"
                 -- Visible but not current workspace
-              , ppVisible = xmobarColor color06 "" . clickable
+              , ppVisible = xmobarColor color14 "" . clickable
                 -- Hidden workspace
               , ppHidden = xmobarColor color05 "" . wrap
                            ("<box type=Top width=2 mt=2 color=" ++ color05 ++ ">") "</box>" . clickable
